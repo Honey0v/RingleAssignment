@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: default
+  datasource:
+    url: jdbc:mysql://localhost:3306/ringle
+    username: root
+    password: kjs38422
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
