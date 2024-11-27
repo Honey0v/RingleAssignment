@@ -1,9 +1,6 @@
 package com.example.ringleassignment.study.service;
 
-import com.example.ringleassignment.study.dto.ReqCreatePossibleLessonDto;
-import com.example.ringleassignment.study.dto.ReqDeletePossibleLessonDto;
-import com.example.ringleassignment.study.dto.ResCreatePossibleLessonDto;
-import com.example.ringleassignment.study.dto.Role;
+import com.example.ringleassignment.study.dto.*;
 import com.example.ringleassignment.study.entity.Member;
 import com.example.ringleassignment.study.entity.PossibleLesson;
 import com.example.ringleassignment.study.repository.MemberRepository;
@@ -11,6 +8,12 @@ import com.example.ringleassignment.study.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +52,43 @@ public class StudyServiceImpl implements StudyService {
         studyRepository.deleteByPossibleLessonIdAndTutor_MemberId(possibleLesson.getPossibleLessonId(), memberId);
     }
 
+    @Override
+    public ResGetPossibleLessonDto getAvailableLessonTimes(ReqGetPossibleLessonDto reqGetPossibleLessonDto) {
+        int lessonDurationMinutes = reqGetPossibleLessonDto.getLessonDurationMinutes();
+
+        if (lessonDurationMinutes != 30 && lessonDurationMinutes != 60) {
+            throw new IllegalArgumentException("수업 길이는 30분 또는 60분만 가능합니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        LocalDate requestDate = reqGetPossibleLessonDto.getDate();
+
+        // 날짜 비교
+        List<PossibleLesson> possibleLessons;
+        if (requestDate.isEqual(today)) {
+            possibleLessons = studyRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(requestDate, requestDate)
+                    .stream()
+                    .filter(lesson -> lesson.getEndTime().isAfter(now)) // 오늘 날짜에서는 현재 시간 이후만 가능
+                    .collect(Collectors.toList());
+        } else {
+            possibleLessons = studyRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(requestDate, requestDate);
+        }
+
+        List<LocalTime> availableTimes = new ArrayList<>();
+        for (PossibleLesson lesson : possibleLessons) {
+            LocalTime currentTime = lesson.getStartTime();
+            while (!currentTime.plusMinutes(lessonDurationMinutes).isAfter(lesson.getEndTime())) {
+                if (requestDate.isEqual(today) && currentTime.isBefore(now)) {
+                    currentTime = currentTime.plusMinutes(lessonDurationMinutes);
+                    continue; // 현재 시간 이전은 제외
+                }
+                availableTimes.add(currentTime);
+                currentTime = currentTime.plusMinutes(lessonDurationMinutes);
+            }
+        }
+
+        return new ResGetPossibleLessonDto(availableTimes);
+    }
 
 }
