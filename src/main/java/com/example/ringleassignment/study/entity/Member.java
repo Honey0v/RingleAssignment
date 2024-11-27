@@ -18,4 +18,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+
+    public Member(Long memberId, String name) {
+        this.memberId = memberId;
+        this.name = name;
+    }
 }

@@ -2,10 +2,8 @@ package com.example.ringleassignment.study.controller;
 
 import com.example.ringleassignment.common.dto.Message;
 import com.example.ringleassignment.common.handler.StatusCode;
-import com.example.ringleassignment.study.dto.ReqCreatePossibleLessonDto;
-import com.example.ringleassignment.study.dto.ReqDeletePossibleLessonDto;
-import com.example.ringleassignment.study.dto.ReqGetPossibleLessonDto;
-import com.example.ringleassignment.study.dto.ResGetPossibleLessonDto;
+import com.example.ringleassignment.study.dto.*;
+import com.example.ringleassignment.study.entity.Member;
 import com.example.ringleassignment.study.service.StudyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +38,11 @@ public class StudyController {
     public ResponseEntity<Message> getPossibleLessons(
             @RequestBody ReqGetPossibleLessonDto reqGetPossibleLessonDto) {
         return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.getAvailableLessonTimes(reqGetPossibleLessonDto)));
+    }
+
+    @GetMapping("/available-tutors")
+    public ResponseEntity<ResGetAvailableTutorsDto> getAvailableTutors(@RequestBody ReqGetAvailableTutorsDto reqGetAvailableTutorsDto) {
+        ResGetAvailableTutorsDto availableTutors = studyServiceImpl.getAvailableTutors(reqGetAvailableTutorsDto);
+        return ResponseEntity.ok(availableTutors);
     }
 }

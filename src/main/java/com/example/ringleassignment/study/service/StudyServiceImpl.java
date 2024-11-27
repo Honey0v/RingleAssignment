@@ -91,4 +91,24 @@ public class StudyServiceImpl implements StudyService {
         return new ResGetPossibleLessonDto(availableTimes);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ResGetAvailableTutorsDto getAvailableTutors(ReqGetAvailableTutorsDto reqGetAvailableTutorsDto) {
+        LocalDate date = reqGetAvailableTutorsDto.getDate();
+        LocalTime time = reqGetAvailableTutorsDto.getStartTime();
+
+        List<PossibleLesson> possibleLessons = studyRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(date, date);
+
+        List<Member> availableTutors = possibleLessons.stream()
+                .filter(lesson -> !time.plusMinutes(reqGetAvailableTutorsDto.getDuration()).isAfter(lesson.getEndTime()) &&
+                        !time.isBefore(lesson.getStartTime()))
+                .map(lesson -> {
+                    Member tutor = lesson.getTutor();
+                    return new Member(tutor.getMemberId(), tutor.getName());
+                })
+                .distinct() // 중복 튜터 제거
+                .collect(Collectors.toList());
+
+        return new ResGetAvailableTutorsDto(availableTutors);
+    }
 }
