@@ -34,6 +34,9 @@ public class Lesson {
     @Column(nullable = false)
     private Integer duration;
 
+    @Version // 낙관적 잠금을 위한 버전 관리
+    private Integer version;
+
     @Builder
     public Lesson(Member tutor, Member student, LocalDate date, LocalTime startTime, Integer duration) {
         this.tutor = tutor;

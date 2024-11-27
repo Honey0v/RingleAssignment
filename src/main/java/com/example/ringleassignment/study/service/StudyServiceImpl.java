@@ -1,10 +1,13 @@
 package com.example.ringleassignment.study.service;
 
 import com.example.ringleassignment.study.dto.*;
+import com.example.ringleassignment.study.entity.Lesson;
 import com.example.ringleassignment.study.entity.Member;
 import com.example.ringleassignment.study.entity.PossibleLesson;
+import com.example.ringleassignment.study.repository.LessonRepository;
 import com.example.ringleassignment.study.repository.MemberRepository;
 import com.example.ringleassignment.study.repository.StudyRepository;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ public class StudyServiceImpl implements StudyService {
 
     private final MemberRepository memberRepository;
     private final StudyRepository studyRepository;
+    private final LessonRepository lessonRepository;
 
     @Override
     @Transactional
@@ -111,4 +115,31 @@ public class StudyServiceImpl implements StudyService {
 
         return new ResGetAvailableTutorsDto(availableTutors);
     }
+
+    @Override
+    @Transactional
+    public ResCreateLessonDto createLesson(ReqCreateLessonDto reqCreateLessonDto) {
+        try {
+            Member tutor = memberRepository.findById(reqCreateLessonDto.getTutorId())
+                    .orElseThrow(() -> new IllegalArgumentException("튜터가 존재하지 않습니다."));
+            Member student = memberRepository.findById(reqCreateLessonDto.getStudentId())
+                    .orElseThrow(() -> new IllegalArgumentException("학생이 존재하지 않습니다."));
+
+            Lesson lesson = Lesson.builder()
+                    .tutor(tutor)
+                    .student(student)
+                    .date(reqCreateLessonDto.getDate())
+                    .startTime(reqCreateLessonDto.getStartTime())
+                    .duration(reqCreateLessonDto.getDuration())
+                    .build();
+
+            Lesson savedLesson = lessonRepository.save(lesson);
+            return new ResCreateLessonDto(savedLesson.getLessonId());
+        } catch (OptimisticLockException e) {
+            // 낙관적 잠금 예외 처리
+            throw new IllegalStateException("동시에 수강 신청을 시도하여 충돌이 발생했습니다. 다시 시도해주세요.", e);
+        }
+    }
+
+
 }

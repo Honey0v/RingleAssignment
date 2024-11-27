@@ -41,8 +41,12 @@ public class StudyController {
     }
 
     @GetMapping("/available-tutors")
-    public ResponseEntity<ResGetAvailableTutorsDto> getAvailableTutors(@RequestBody ReqGetAvailableTutorsDto reqGetAvailableTutorsDto) {
-        ResGetAvailableTutorsDto availableTutors = studyServiceImpl.getAvailableTutors(reqGetAvailableTutorsDto);
-        return ResponseEntity.ok(availableTutors);
+    public ResponseEntity<Message> getAvailableTutors(@RequestBody ReqGetAvailableTutorsDto reqGetAvailableTutorsDto) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.getAvailableTutors(reqGetAvailableTutorsDto)));
+    }
+
+    @PostMapping("/lesson")
+    public ResponseEntity<Message> createLesson(@RequestBody ReqCreateLessonDto reqCreateLessonDto) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.createLesson(reqCreateLessonDto)));
     }
 }
