@@ -11,7 +11,9 @@ import com.example.ringleassignment.study.repository.MemberRepository;
 import com.example.ringleassignment.study.repository.StudyRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -182,29 +184,26 @@ public class StudyServiceImpl implements StudyService {
 
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ResCreateLessonDto createLesson(ReqCreateLessonDto reqCreateLessonDto) {
+        // 이미 존재하는 수업 확인
+        boolean isLessonExists = lessonRepository.existsByTutor_MemberIdAndDateAndStartTime(
+                reqCreateLessonDto.getTutorId(),
+                reqCreateLessonDto.getDate(),
+                reqCreateLessonDto.getStartTime()
+        );
+        if (isLessonExists) {
+            throw new CustomException(StatusCode.CONFLICT);
+        }
+
         try {
-            // 학생 조회
+            // 튜터 및 학생 조회
+            Member tutor = memberRepository.findById(reqCreateLessonDto.getTutorId())
+                    .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
             Member student = memberRepository.findById(reqCreateLessonDto.getStudentId())
                     .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
 
-            // 중복된 Lesson 확인
-            boolean lessonExists = lessonRepository.existsByTutor_MemberIdAndDateAndStartTime(
-                    reqCreateLessonDto.getTutorId(),
-                    reqCreateLessonDto.getDate(),
-                    reqCreateLessonDto.getStartTime()
-            );
-
-            if (lessonExists) {
-                throw new CustomException(StatusCode.ALREADY_EXISTS); // 새로운 상태 코드 정의 필요
-            }
-
-            // 튜터 조회 (여기서 조회해도 성능 문제가 없습니다)
-            Member tutor = memberRepository.findById(reqCreateLessonDto.getTutorId())
-                    .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
-
-            // 새로운 수업 생성 및 저장
+            // 새로운 수업 생성
             Lesson lesson = Lesson.builder()
                     .tutor(tutor)
                     .student(student)
@@ -213,13 +212,18 @@ public class StudyServiceImpl implements StudyService {
                     .duration(reqCreateLessonDto.getDuration())
                     .build();
 
+            // Lesson 저장
             Lesson savedLesson = lessonRepository.save(lesson);
             return new ResCreateLessonDto(savedLesson.getLessonId());
+        } catch (DataIntegrityViolationException e) {
+            // UNIQUE 제약조건 위반 예외 처리
+            throw new CustomException(StatusCode.CONFLICT);
         } catch (OptimisticLockException e) {
-            // 동시성 문제 발생 시 예외 처리
+            // 동시성 문제 처리
             throw new CustomException(StatusCode.CONFLICT);
         }
     }
+
 
 
 
