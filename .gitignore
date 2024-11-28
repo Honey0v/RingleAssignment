@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+# Docker Compose
+docker-compose.yml
+
+# Init SQL
+init.sql
