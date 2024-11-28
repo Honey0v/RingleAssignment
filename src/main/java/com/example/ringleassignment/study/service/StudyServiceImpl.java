@@ -61,9 +61,11 @@ public class StudyServiceImpl implements StudyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResGetPossibleLessonDto getAvailableLessonTimes(ReqGetPossibleLessonDto reqGetPossibleLessonDto) {
         int lessonDurationMinutes = reqGetPossibleLessonDto.getLessonDurationMinutes();
 
+        // 요청된 수업 시간이 30분 또는 60분이 아니면 예외 발생
         if (lessonDurationMinutes != 30 && lessonDurationMinutes != 60) {
             throw new CustomException(StatusCode.MALFORMED);
         }
@@ -98,7 +100,7 @@ public class StudyServiceImpl implements StudyService {
             List<LocalTime[]> reservedTimes = tutorReservedTimes.getOrDefault(tutor.getMemberId(), new ArrayList<>());
 
             LocalTime currentTime = lesson.getStartTime();
-            while (!currentTime.plusMinutes(lessonDurationMinutes).isAfter(lesson.getEndTime())) {
+            while (!currentTime.isAfter(lesson.getEndTime().minusMinutes(lessonDurationMinutes))) {
                 final LocalTime currentStartTime = currentTime;
                 LocalTime currentEndTime = currentStartTime.plusMinutes(lessonDurationMinutes);
 
@@ -112,7 +114,8 @@ public class StudyServiceImpl implements StudyService {
                     availableTimes.add(currentTime); // Set에 추가
                 }
 
-                currentTime = currentTime.plusMinutes(lessonDurationMinutes);
+                // 매 30분 단위로 갱신
+                currentTime = currentTime.plusMinutes(30);
             }
         }
 
