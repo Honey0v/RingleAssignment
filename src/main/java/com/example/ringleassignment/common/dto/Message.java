@@ -2,8 +2,9 @@ package com.example.ringleassignment.common.dto;
 
 import com.example.ringleassignment.common.handler.StatusCode;
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class Message {
     public static final String DEFAULT_RESPONSE = "Request processed successfully";
     private int statusCode;

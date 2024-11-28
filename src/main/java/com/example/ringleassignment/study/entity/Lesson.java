@@ -1,6 +1,7 @@
 package com.example.ringleassignment.study.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "lesson", indexes = {
         @Index(name = "idx_lesson_date", columnList = "date"),
         @Index(name = "idx_lesson_tutor_id", columnList = "tutor_id"),

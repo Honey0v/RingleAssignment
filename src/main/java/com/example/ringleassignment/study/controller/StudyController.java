@@ -12,41 +12,41 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/study")
 @RequiredArgsConstructor
 public class StudyController {
-    private final StudyService studyServiceImpl;
+    private final StudyService studyService;
 
     @PostMapping("/possible-lesson")
     public ResponseEntity<Message> createPossibleLesson(
             @RequestBody ReqCreatePossibleLessonDto reqCreatePossibleLessonDto,
             @RequestParam Long memberId) {
-        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.createPossibleLesson(reqCreatePossibleLessonDto, memberId)));
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyService.createPossibleLesson(reqCreatePossibleLessonDto, memberId)));
     }
 
     @DeleteMapping("/possible-lesson")
     public ResponseEntity<Message> deletePossibleLesson(
             @RequestBody ReqDeletePossibleLessonDto reqDeletePossibleLessonDto,
             @RequestParam Long memberId) {
-        studyServiceImpl.deletePossibleLesson(reqDeletePossibleLessonDto, memberId);
+        studyService.deletePossibleLesson(reqDeletePossibleLessonDto, memberId);
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
 
     @GetMapping("/possible-lessons")
     public ResponseEntity<Message> getPossibleLessons(
             @RequestBody ReqGetPossibleLessonDto reqGetPossibleLessonDto) {
-        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.getAvailableLessonTimes(reqGetPossibleLessonDto)));
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyService.getAvailableLessonTimes(reqGetPossibleLessonDto)));
     }
 
     @GetMapping("/available-tutors")
     public ResponseEntity<Message> getAvailableTutors(@RequestBody ReqGetAvailableTutorsDto reqGetAvailableTutorsDto) {
-        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.getAvailableTutors(reqGetAvailableTutorsDto)));
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyService.getAvailableTutors(reqGetAvailableTutorsDto)));
     }
 
     @PostMapping("/lesson")
     public ResponseEntity<Message> createLesson(@RequestBody ReqCreateLessonDto reqCreateLessonDto) {
-        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.createLesson(reqCreateLessonDto)));
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyService.createLesson(reqCreateLessonDto)));
     }
 
     @GetMapping("/my-lessons")
     public ResponseEntity<Message> getMyLessons(@RequestBody ReqGetMyLessonDto reqGetMyLessonDto) {
-        return ResponseEntity.ok(new Message(StatusCode.OK, studyServiceImpl.getMyLessons(reqGetMyLessonDto)));
+        return ResponseEntity.ok(new Message(StatusCode.OK, studyService.getMyLessons(reqGetMyLessonDto)));
     }
 }

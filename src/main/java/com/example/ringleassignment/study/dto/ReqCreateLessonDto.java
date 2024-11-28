@@ -1,5 +1,6 @@
 package com.example.ringleassignment.study.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 public class ReqCreateLessonDto {
     private Long tutorId;
@@ -14,12 +16,4 @@ public class ReqCreateLessonDto {
     private LocalDate date;
     private LocalTime startTime;
     private Integer duration;
-
-    public ReqCreateLessonDto(Long tutorId, Long studentId, LocalDate date, LocalTime startTime, Integer duration) {
-        this.tutorId = tutorId;
-        this.studentId = studentId;
-        this.date = date;
-        this.startTime = startTime;
-        this.duration = duration;
-    }
 }

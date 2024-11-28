@@ -152,7 +152,7 @@ public class StudyServiceImpl implements StudyService {
                     // 해당 튜터의 예약된 시간 가져오기
                     List<Lesson> tutorReservedLessons = reservedLessons.stream()
                             .filter(reserved -> reserved.getTutor().getMemberId().equals(tutor.getMemberId()))
-                            .collect(Collectors.toList());
+                            .toList();
 
                     // 가능한 시간대에서 예약된 시간을 제외
                     LocalTime startTime = lesson.getStartTime();
@@ -185,10 +185,23 @@ public class StudyServiceImpl implements StudyService {
     @Transactional
     public ResCreateLessonDto createLesson(ReqCreateLessonDto reqCreateLessonDto) {
         try {
-            // 튜터 및 학생 조회
-            Member tutor = memberRepository.findById(reqCreateLessonDto.getTutorId())
-                    .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+            // 학생 조회
             Member student = memberRepository.findById(reqCreateLessonDto.getStudentId())
+                    .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+
+            // 중복된 Lesson 확인
+            boolean lessonExists = lessonRepository.existsByTutor_MemberIdAndDateAndStartTime(
+                    reqCreateLessonDto.getTutorId(),
+                    reqCreateLessonDto.getDate(),
+                    reqCreateLessonDto.getStartTime()
+            );
+
+            if (lessonExists) {
+                throw new CustomException(StatusCode.ALREADY_EXISTS); // 새로운 상태 코드 정의 필요
+            }
+
+            // 튜터 조회 (여기서 조회해도 성능 문제가 없습니다)
+            Member tutor = memberRepository.findById(reqCreateLessonDto.getTutorId())
                     .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
 
             // 새로운 수업 생성 및 저장
@@ -208,7 +221,10 @@ public class StudyServiceImpl implements StudyService {
         }
     }
 
+
+
     @Override
+    @Transactional
     public ResGetMyLessonsDto getMyLessons(ReqGetMyLessonDto reqGetMyLessonDto) {
         // 학생의 모든 수업 조회
         List<Lesson> lessons = lessonRepository.findByStudent_MemberId(reqGetMyLessonDto.getStudentId());
