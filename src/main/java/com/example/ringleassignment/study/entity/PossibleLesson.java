@@ -11,6 +11,13 @@ import java.time.LocalTime;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_possible_lesson_tutor", columnList = "member_id"),
+        @Index(name = "idx_possible_lesson_start_date", columnList = "startDate"),
+        @Index(name = "idx_possible_lesson_end_date", columnList = "endDate"),
+        @Index(name = "idx_possible_lesson_start_time", columnList = "startTime"),
+        @Index(name = "idx_possible_lesson_end_time", columnList = "endTime")
+})
 public class PossibleLesson {
 
     @Id
@@ -42,4 +49,3 @@ public class PossibleLesson {
         this.endTime = endTime;
     }
 }
-

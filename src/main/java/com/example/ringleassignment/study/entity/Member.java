@@ -19,8 +19,9 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    public Member(Long memberId, String name) {
+    public Member(Long memberId, String name, Role role) {
         this.memberId = memberId;
         this.name = name;
+        this.role = role;
     }
 }
