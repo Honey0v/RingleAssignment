@@ -19,7 +19,6 @@ import java.time.LocalTime;
         @Index(name = "idx_lesson_student_id", columnList = "student_id")
 })
 public class Lesson {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long lessonId;

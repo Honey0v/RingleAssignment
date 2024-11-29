@@ -19,26 +19,25 @@ import java.time.LocalTime;
         @Index(name = "idx_possible_lesson_end_time", columnList = "endTime")
 })
 public class PossibleLesson {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long possibleLessonId;
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
-    private Member tutor; // 해당 가능한 시간대가 속한 튜터
+    private Member tutor;
 
     @Column(nullable = false)
-    private LocalDate startDate; // 가능한 시작 날짜
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDate endDate; // 가능한 종료 날짜
+    private LocalDate endDate;
 
     @Column(nullable = false)
-    private LocalTime startTime; // 가능한 시작 시간
+    private LocalTime startTime;
 
     @Column(nullable = false)
-    private LocalTime endTime; // 가능한 종료 시간
+    private LocalTime endTime;
 
     @Builder
     public PossibleLesson(Member tutor, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {

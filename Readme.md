@@ -134,3 +134,9 @@ curl --location 'http://localhost:8080/api/study/lesson' \
 --header 'Content-Type: application/json' \
 --data '{"tutorId": 1, "studentId": 4, "date": "2024-12-03", "startTime": "14:00:00", "duration": 30}' &
 ```
+## 이후 개선 사항
+- 이용 가능한 시간대를 조회하는 기능과 수업 가능한 튜터를 조회하는 기능 최적화
+
+
+
+---
