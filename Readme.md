@@ -134,16 +134,3 @@ curl --location 'http://localhost:8080/api/study/lesson' \
 --header 'Content-Type: application/json' \
 --data '{"tutorId": 1, "studentId": 4, "date": "2024-12-03", "startTime": "14:00:00", "duration": 30}' &
 ```
-
----
-
-## 향후 개선 사항
-- **로깅 강화**: 예약 충돌 및 오류 상황에 대한 세부 로그 제공.
-- **비관적 잠금 지원**: 특정 시나리오에서 비관적 잠금 전략 추가.
-- **UI 개발**: 사용자 친화적인 프론트엔드 추가.
-
----
-
-## 문의 사항
-프로젝트 관련 문의는 [example@example.com](mailto:example@example.com)으로 연락해주세요.
-
